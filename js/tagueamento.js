@@ -22,59 +22,61 @@ var gaCached = ga;
 
 gaCached('create', 'UA-12345-6', 'auto');
 
-// gaCached('create', 'UA-12345-6', 'auto');
-
-// gaCached('create', 'UA-12345-6', 'auto', 'myTracker');
-gaCached('send', {
-    hitType: 'pageview',
-    page: location.pathname,
-    title: document.title,
-    location: location.href
-});
-console.log(ga.q);
-
-
-liContato = document.getElementsByClassName("menu-lista-contato")[0];
-liContato.addEventListener("click", function(){fnSend("event","menu","entre_em_contato","link_externo")});
-
-liDownloadPdf = document.getElementsByClassName("menu-lista-download")[0];
-liDownloadPdf.addEventListener("click", function(){fnSend("event","menu","download_pdf","download_pdf")});
-
-try{
-    cardLorem = document.querySelectorAll('[data-id="lorem"]')[0];
-    cardLorem.addEventListener("click", function(){fnSend("event","analise","ver_mais","lorem")});
-
-    cardIpsum = document.querySelectorAll('[data-id="ipsum"]')[0];
-    cardIpsum.addEventListener("click", function(){fnSend("event","analise","ver_mais","ipsum")});
-
-    cardDolor = document.querySelectorAll('[data-id="dolor"]')[0];
-    cardDolor.addEventListener("click", function(){fnSend("event","analise","ver_mais","dolor")});
-}
-catch(err){
-    console.log('Fora da pagina análise');
+const executeFn = (info, errorMessage) => {
+    try {
+        info();
+    }
+    catch(err){
+        console.log("fora da pagina "+errorMessage);
+    }
 }
 
-try{
-    cardNome = document.getElementById('nome');
-    cardNome.addEventListener('input',  function(){fnSend("event","contato","nome","preencheu")});
+fnPageView('pageview', location.pathname, document.title, location.href);
 
-    cardEmail = document.getElementById('email');
-    cardEmail.addEventListener('input',  function(){fnSend("event","contato","email","preencheu")});
+fnMenu();
+
+executeFn(fnAnalise, "Análise");
+executeFn(fnSobre, "Contato");
+
+
+//---------------------------------------------------------------------------------------------------------------------
+function fnMenu(){
+    let getLiContato = document.getElementsByClassName("menu-lista-contato")[0];
+    getLiContato.addEventListener("click", function(){fnSend("event","menu","entre_em_contato","link_externo")});
+
+    let getLiDownloadPdf = document.getElementsByClassName("menu-lista-download")[0];
+    getLiDownloadPdf.addEventListener("click", function(){fnSend("event","menu","download_pdf","download_pdf")});
+}
+
+
+function fnAnalise(){
+    let getCardLorem = document.querySelectorAll('[data-id="lorem"]')[0];
+    getCardLorem.addEventListener("click", function(){fnSend("event","analise","ver_mais","lorem")});
+
+    let getCardIpsum = document.querySelectorAll('[data-id="ipsum"]')[0];
+    getCardIpsum.addEventListener("click", function(){fnSend("event","analise","ver_mais","ipsum")});
+
+    let getCardDolor = document.querySelectorAll('[data-id="dolor"]')[0];
+    getCardDolor.addEventListener("click", function(){fnSend("event","analise","ver_mais","dolor")});
+}
+
+function fnSobre(){
+    let getCardNome = document.getElementById('nome');
+    getCardNome.addEventListener('focusout',  function(){ getCardNome.value ? fnSend("event","contato","nome","preencheu"): null });
+
+    let getCardEmail = document.getElementById('email');
+    getCardEmail.addEventListener('focusout',  function(){ getCardEmail.value ? fnSend("event","contato","email","preencheu"): null });
     
-    cardPhone = document.getElementById('telefone');
-    cardPhone.addEventListener('input',  function(){fnSend("event","contato","telefone","preencheu")});
+    let getCardPhone = document.getElementById('telefone');
+    getCardPhone.addEventListener('focusout',  function(){ getCardPhone.value ? fnSend("event","contato","telefone","preencheu"): null });
 
-    cardContact = document.getElementById('aceito');
-    cardContact.addEventListener('input',  function(){fnSend("event","contato","aceito","preencheu")});
-
-    cardSent = document.querySelectorAll('[type="submit"]')[0];
-    cardSent.addEventListener('click',  function(){fnSend("event","contato","enviado","enviado")});
-}
-catch(err){
-    console.log('Fora da pagina "Contato"');
+    let getCardContact = document.getElementById('aceito');
+    getCardContact.addEventListener('change',  function(){ fnSend("event","contato","aceito","preencheu")});
+    
+    let getCardSent = document.querySelectorAll('[type="submit"]')[0];
+    getCardSent.addEventListener('click',  function(){fnSend("event","contato","enviado","enviado")});
 }
 
-//Contato
 function fnSend(hitType, eventCategory, eventAction, eventLabel){
     gaCached('send', {
         hitType: hitType,
@@ -82,7 +84,16 @@ function fnSend(hitType, eventCategory, eventAction, eventLabel){
         eventAction: eventAction,
         eventLabel: eventLabel
     });
-    console.log(ga.q);
+    // console.log(ga.q);
 }
 
+function fnPageView(hitType, page, title, location){
+    gaCached('send', {
+        hitType: hitType,
+        page: page,
+        title: title,
+        location: location
+    });
+    // console.log(ga.q);
+}
 
